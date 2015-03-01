@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TextManager.Interop;
+﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,16 @@ namespace allibeccom.GoEditor.LanguageService.Colorizer
     {
         private IVsTextLines textLines;
 
+        private enum State
+        {
+            NORMAL,
+            COMMENT,
+            KEYWORD,
+            NUMBER,
+            STRING,
+            IDENTIFIER
+        }
+
         public GoColorizer(IVsTextLines textLines)
         {
             this.textLines = textLines;
@@ -18,27 +29,34 @@ namespace allibeccom.GoEditor.LanguageService.Colorizer
 
         public void CloseColorizer()
         {
-            throw new NotImplementedException();
+            
         }
 
         public int ColorizeLine(int iLine, int iLength, IntPtr pszText, int iState, uint[] pAttributes)
         {
-            throw new NotImplementedException();
+            var state = (State)iState;
+            for (var i = 0; i < iLength; i++) {
+                pAttributes[i] = (int)DEFAULTITEMS.COLITEM_COMMENT;
+            }
+            return VSConstants.S_OK;
         }
 
         public int GetStartState(out int piStartState)
         {
-            throw new NotImplementedException();
+            piStartState = (int)State.NORMAL;
+            return VSConstants.S_OK;
         }
 
         public int GetStateAtEndOfLine(int iLine, int iLength, IntPtr pText, int iState)
         {
-            throw new NotImplementedException();
+            iState = (int)State.COMMENT;
+            return VSConstants.S_OK;
         }
 
         public int GetStateMaintenanceFlag(out int pfFlag)
         {
-            throw new NotImplementedException();
+            pfFlag = 1;
+            return VSConstants.S_OK;
         }
     }
 }

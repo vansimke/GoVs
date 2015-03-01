@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TextManager.Interop;
+﻿using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,17 +19,17 @@ namespace allibeccom.GoEditor.LanguageService.WindowManager
 
         public int AddAdornments()
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int OnNewView(IVsTextView pView)
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
 
         public int RemoveAdornments()
         {
-            throw new NotImplementedException();
+            return VSConstants.S_OK;
         }
     }
 }
