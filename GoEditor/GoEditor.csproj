@@ -122,13 +122,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Guids.cs" />
-    <Compile Include="LanguageService\Colorizer\ColorableItems\IdentifierColorableItem.cs" />
-    <Compile Include="LanguageService\Colorizer\ColorableItems\NormalColorableItem.cs" />
-    <Compile Include="LanguageService\Colorizer\ColorableItems\KeywordColorableItem.cs" />
-    <Compile Include="LanguageService\Colorizer\ColorableItems\NumberColorableItem.cs" />
-    <Compile Include="LanguageService\Colorizer\ColorableItems\StringColorableItem.cs" />
-    <Compile Include="LanguageService\Colorizer\ColorableItems\CommentColorableItem.cs" />
-    <Compile Include="LanguageService\Colorizer\ColorableItems\GoColorableItem.cs" />
     <Compile Include="LanguageService\Colorizer\GoColorizer.cs" />
     <Compile Include="LanguageService\GoLanguageService.cs" />
     <Compile Include="LanguageService\WindowManager\GoWindowManager.cs" />

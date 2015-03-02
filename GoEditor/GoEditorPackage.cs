@@ -34,7 +34,7 @@ namespace allibeccom.GoEditor
         "Go Language Service",
         106,
         CodeSense = false,
-        RequestStockColors = true,
+        RequestStockColors = false,
         EnableCommenting = true,
         EnableAsyncCompletion = true)]
     [ProvideLanguageExtension(typeof(GoLanguageService), ".go")]
@@ -69,6 +69,7 @@ namespace allibeccom.GoEditor
 
             IServiceContainer serviceContainer = this as IServiceContainer;
             var languageService = new GoLanguageService();
+            
             serviceContainer.AddService(typeof(GoLanguageService), languageService, true);
 
 
