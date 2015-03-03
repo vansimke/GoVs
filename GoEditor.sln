@@ -5,8 +5,6 @@ VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoEditor", "GoEditor\GoEditor.csproj", "{E48A11A8-49A6-4AD2-BBCC-716072C3F84F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GoEditor_IntegrationTests", "GoEditor\GoEditor_IntegrationTests\GoEditor_IntegrationTests.csproj", "{DB2E5ED0-3100-4BBD-B0D2-B9EBD49402C8}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{562FD44D-EA51-40CD-813E-2C498AD59D57}"
 	ProjectSection(SolutionItems) = preProject
 		IntegrationTests.testsettings = IntegrationTests.testsettings
@@ -25,10 +23,6 @@ Global
 		{E48A11A8-49A6-4AD2-BBCC-716072C3F84F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E48A11A8-49A6-4AD2-BBCC-716072C3F84F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E48A11A8-49A6-4AD2-BBCC-716072C3F84F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB2E5ED0-3100-4BBD-B0D2-B9EBD49402C8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB2E5ED0-3100-4BBD-B0D2-B9EBD49402C8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB2E5ED0-3100-4BBD-B0D2-B9EBD49402C8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB2E5ED0-3100-4BBD-B0D2-B9EBD49402C8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{3655E8BF-FC3D-4FC7-A271-F232B585411B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{3655E8BF-FC3D-4FC7-A271-F232B585411B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3655E8BF-FC3D-4FC7-A271-F232B585411B}.Release|Any CPU.ActiveCfg = Release|Any CPU

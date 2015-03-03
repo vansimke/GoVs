@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio;
+﻿using allibeccom.GoEditor.Tokens;
+using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.TextManager.Interop;
 using System;
 using System.Collections.Generic;
@@ -14,6 +15,7 @@ namespace allibeccom.GoEditor.LanguageService.Colorizer
         private IVsTextLines textLines;
 
         private Dictionary<int, STATE> stateMap = new Dictionary<int, STATE>();
+        private Tokenizer tokenizer;
 
         private enum STATE
         {
@@ -21,9 +23,10 @@ namespace allibeccom.GoEditor.LanguageService.Colorizer
             BLOCK_COMMENT
         }
 
-        public GoColorizer(IVsTextLines textLines)
+        public GoColorizer(IVsTextLines textLines, Tokenizer tokenizer)
         {
             this.textLines = textLines;
+            this.tokenizer = tokenizer;
         }
 
         public void CloseColorizer()
@@ -33,101 +36,50 @@ namespace allibeccom.GoEditor.LanguageService.Colorizer
 
         public int ColorizeLine(int iLine, int iLength, IntPtr pszText, int iState, uint[] pAttributes)
         {
-            var state = GetInitialStateForLine(iLine);
             string text = Marshal.PtrToStringAuto(pszText);
-            
-            for (int position = 0; position < iLength; position++)
-            {
-                int tokenLength;
-                DEFAULTITEMS tokenType;
 
-                if (state == STATE.NORMAL)
+            STATE initialState = GetLineStartState(iLine);
+            STATE endState = STATE.NORMAL;
+            if (initialState == STATE.BLOCK_COMMENT || text.IndexOf("/*") > -1)
+            {
+                if (text.IndexOf("*/") == -1 ||
+                    (text.IndexOf("/*") > text.IndexOf("*/")))
                 {
-                    state = FindNextToken(position, text, out tokenLength, out tokenType);
+                    endState = STATE.BLOCK_COMMENT;
+                }
+            }
+
+            stateMap[iLine] = endState;
+
+            List<Token> tokens = tokenizer.GetTokens(text);
+
+            for (var i = 0; i < tokens.Count; i++)
+            {
+                var t = tokens[i];
+                DEFAULTITEMS color = DEFAULTITEMS.COLITEM_TEXT;
+
+                if (initialState == STATE.BLOCK_COMMENT)
+                {
+                    if (i < tokens.Count - 1)
+                    {
+                        if (t.Literal == "*/")
+                        {
+                            initialState = STATE.NORMAL;
+                        }
+                    }
+                    color = DEFAULTITEMS.COLITEM_COMMENT;
                 }
                 else
                 {
-                    state = ContinueBlockComment(position, text, out tokenLength, out tokenType);
+                    color = GetColorableTypeForToken(t);
                 }
-
-                for (var i = 0; i < tokenLength; i++)
+                for (var j = 0; j < t.Literal.Length; j++)
                 {
-                    pAttributes[position + i] = (uint)tokenType;
+                    pAttributes[t.Position + j] = (uint)color;
                 }
-                position += tokenLength;
             }
-            stateMap[iLine] = state;
 
             return VSConstants.S_OK;
-        }
-
-        private STATE GetInitialStateForLine(int line)
-        {
-            STATE result = stateMap.ContainsKey(line - 1) ? stateMap[line - 1] : STATE.NORMAL;
-
-            return result;
-        }
-
-        private STATE FindNextToken(int position, string text, out int tokenLength, out DEFAULTITEMS tokenType)
-        {
-            STATE result;
-
-            int remainingCharacters = text.Length - position;
-            if (remainingCharacters >= 2) {
-                if (text.Substring(position, 2) == "//") 
-                {
-                    tokenLength = text.Length - position;
-                    tokenType = DEFAULTITEMS.COLITEM_COMMENT;
-                    result = STATE.NORMAL;
-                }
-                else if (text.Substring(position, 2) == "/*") 
-                {
-                    result = ContinueBlockComment(position, text, out tokenLength, out tokenType);
-                }
-                else
-                {
-                    tokenLength = 1;
-                    tokenType = DEFAULTITEMS.COLITEM_TEXT;
-                    result = STATE.NORMAL;
-                }
-            }
-            else 
-            {
-                tokenLength = 1;
-                tokenType = DEFAULTITEMS.COLITEM_TEXT;
-                result = STATE.NORMAL;
-            }
-
-            return result;
-        }
-
-        private STATE ContinueBlockComment(int position, string text, out int tokenLength, out DEFAULTITEMS tokenType)
-        {
-            STATE newState;
-            if (text.Length < 2)
-            {
-                tokenLength = text.Length - position;
-                tokenType = DEFAULTITEMS.COLITEM_COMMENT;
-                newState = STATE.BLOCK_COMMENT;
-            }
-            else
-            {
-                int endIndex = text.IndexOf("*/", position);
-                if (endIndex == -1)
-                {
-                    tokenLength = text.Length - position;
-                    tokenType = DEFAULTITEMS.COLITEM_COMMENT;
-                    newState = STATE.BLOCK_COMMENT;
-                }
-                else
-                {
-                    tokenLength = endIndex - position + 2;
-                    tokenType = DEFAULTITEMS.COLITEM_COMMENT;
-                    newState = STATE.NORMAL;
-                }
-            }
-
-            return newState;
         }
 
         public int GetStartState(out int piStartState)
@@ -146,6 +98,36 @@ namespace allibeccom.GoEditor.LanguageService.Colorizer
         {
             pfFlag = 0;
             return VSConstants.S_OK;
+        }
+        private STATE GetLineStartState(int lineNumber)
+        {
+            STATE result = STATE.NORMAL;
+            if (lineNumber > 0)
+            {
+                if (stateMap.ContainsKey(lineNumber - 1))
+                {
+                    result = stateMap[lineNumber - 1];
+                }
+            }
+
+            return result;
+        }
+
+
+        private readonly Token.TokenType[] COMMENT_TOKENS = new Token.TokenType[]
+        {
+            Token.TokenType.COMMENT, 
+        };
+
+        private DEFAULTITEMS GetColorableTypeForToken(Token token)
+        {
+            DEFAULTITEMS result = DEFAULTITEMS.COLITEM_TEXT;
+            if (COMMENT_TOKENS.Contains(token.TypeAsToken))
+            {
+                result = DEFAULTITEMS.COLITEM_COMMENT;
+            }
+
+            return result;
         }
     }
 }
